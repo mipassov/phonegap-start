@@ -24,6 +24,55 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>Hello World</title>
+        <script type="text/javascript" src="phonegap.js"></script>
+        <script type="text/javascript">
+        var app = {
+        	    initialize: function() {
+        	        this.bind();
+        	    },
+        	    bind: function() {
+        	        document.addEventListener('deviceready', this.deviceready, false);
+        	    },
+        	    deviceready: function() {
+        	    	navigator.splashscreen.hide();
+        	    	app.report('deviceready');
+        	    },
+        	    report: function(id) {
+        	        // Report the event in the console
+        	        console.log("Report: " + id);
+
+        	        // Toggle the state from "pending" to "complete" for the reported ID.
+        	        // Accomplished by adding .hide to the pending element and removing
+        	        // .hide from the complete element.
+        	        document.querySelector('#' + id + ' .pending').className += ' hide';
+        	        var completeElem = document.querySelector('#' + id + ' .complete');
+        	        completeElem.className = completeElem.className.split('hide').join('');
+        	        getLocation();
+        	    }
+        	};
+            app.initialize();
+            
+            function getLocation() {
+            	var options = new Object();
+            	options.frequency = 5000;
+            	timeout = setInterval("animate()", 500);
+            	navigator.geolocation.watchPosition(updateLocation, function(){	}, options);
+            };
+
+            function updateLocation(position) {
+            	clearTimeout(timeout);
+            	//pt.latitude, pt.longitude, pt.altitude, pt.accuracy, pt.heading, pt.speed
+            	var pt = position.coords;
+            	document.getElementById('latitude').innerHTML = pt.latitude;
+            	document.getElementById('longitude').innerHTML = pt.longitude;
+            	document.getElementById('altitude').innerHTML = pt.altitude;
+            	document.getElementById('heading').innerHTML = pt.heading;
+            	document.getElementById('speed').innerHTML = pt.speed;
+            	var dt = new Date();
+            	dt.setTime(position.timestamp);
+            	document.getElementById('timestamp').innerHTML = dt.toLocaleTimeString();
+           	};            
+        </script>
     </head>
     <body>
         <div class="app">
@@ -31,12 +80,18 @@
             <div id="deviceready">
                 <p class="status pending blink">Connecting to Device</p>
                 <p class="status complete blink hide">Device is Ready</p>
+				<p>
+					<ul>
+					<li>latitude: <span id="latitude">-</span></li>
+					<li>longitude: <span id="longitude">-</span></li>
+					<li>altitude: <span id="altitude">-</span></li>
+					<li>heading: <span id="heading">-</span></li>
+					<li>speed: <span id="speed">-</span></li>
+		            <li>timestamp: <span id="timestamp">-</span></li>
+					</ul>
+				</p>
+                
             </div>
         </div>
-        <script type="text/javascript" src="phonegap.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript">
-            app.initialize();
-        </script>
     </body>
 </html>
